@@ -1,8 +1,15 @@
 from fastapi import FastAPI
 from pydantic import BaseModel
+from fastapi.middleware.cors import CORSMiddleware
 
 app = FastAPI(title="API de Clientes", version="1.0")
 
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["http://localhost:5173"],
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 class ClienteCreate(BaseModel):
     nome: str
@@ -16,13 +23,21 @@ class Cliente(ClienteCreate):
 
 clients_db: list[Cliente] = []
 
-@app.get("/api/clients")
+@app.get("/api/clients", response_model=list[Cliente])
 def get_clients():
-    return []
+    return clients_db
 
 @app.post("/api/clients", response_model=Cliente, status_code=201)
 def add_client(client: ClienteCreate):
-    novo_id = max((c.id for c in clients_db), default = 0) + 1
-    novo_cliente = Cliente(id = novo_id, **client.model_dump())
+    novo_id = len(clients_db) + 1
+
+    novo_cliente = Cliente(
+        id=novo_id,
+        nome=client.nome,
+        email=client.email,
+        telefone=client.telefone,
+        empresa=client.empresa,
+        active=True
+    )
     clients_db.append(novo_cliente)
     return novo_cliente
