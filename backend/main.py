@@ -22,6 +22,7 @@ class Cliente(ClienteCreate):
     active: bool = True
 
 clients_db: list[Cliente] = []
+proximo_id = 1
 
 @app.get("/api/clients", response_model=list[Cliente])
 def get_clients():
@@ -29,16 +30,18 @@ def get_clients():
 
 @app.post("/api/clients", response_model=Cliente, status_code=201)
 def add_client(client: ClienteCreate):
-    novo_id = len(clients_db) + 1
+    global proximo_id
 
     novo_cliente = Cliente(
-        id=novo_id,
+        id=proximo_id,
         nome=client.nome,
         email=client.email,
         telefone=client.telefone,
         empresa=client.empresa,
         active=True
     )
+    proximo_id += 1
+    
     clients_db.append(novo_cliente)
     return novo_cliente
 
