@@ -47,6 +47,21 @@ const ClientePython = () => {
         }
     };
 
+
+    const excluirCliente = async (id: number) => {
+        try{
+            const response = await fetch(`http://localhost:5000/api/clients/${id}`, {
+                method: 'DELETE',
+            });
+
+            if (response.ok) {
+                setClientes(clientes.filter((cliente) => cliente.id !== id));
+            }
+        } catch (error) {
+            console.error('Erro ao excluir cliente', error);
+        }
+    };
+
     return (
         <div>
             <h2 className="text-xl font-semibold text-gray-700 mb-3">Lista de Clientes (Python)</h2>
@@ -79,9 +94,17 @@ const ClientePython = () => {
             ) : (
                 <ul className="space-y-2">
                     {clientes.map((cliente) => (
-                        <li key={cliente.id} className="border border-gray-200 p-3 rounded bg-gray-50">
-                            <p className="font-semibold text-gray-800">{cliente.nome}</p>
-                            <p className="text-sm text-gray-500">{cliente.email}</p>
+                        <li key={cliente.id} className="border border-gray-200 p-3 rounded bg-gray-50 flex justify-between items-center">
+                            <div>
+                                <p className="font-semibold text-gray-800">{cliente.nome}</p>
+                                <p className="text-sm text-gray-500">{cliente.email}</p>
+                            </div>
+                            <button
+                                onClick={() => excluirCliente(cliente.id)}
+                                className="text-red-600 hover:text-red-800 text-sm font-medium"
+                            >
+                                Excluir
+                            </button>
                         </li>
                     ))}
                 </ul>
