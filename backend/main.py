@@ -1,4 +1,4 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
 from fastapi.middleware.cors import CORSMiddleware
 
@@ -41,3 +41,11 @@ def add_client(client: ClienteCreate):
     )
     clients_db.append(novo_cliente)
     return novo_cliente
+
+@app.delete("/api/clients/{client_id}", status_code=204)
+def delete_client(client_id: int):
+    for cliente in clients_db:
+        if cliente.id == client_id:
+            clients_db.remove(cliente)
+            return
+    raise HTTPException(status_code=404, detail="Cliente não encontrado")
